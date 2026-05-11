@@ -249,6 +249,18 @@ body{background:#000;overflow:hidden;font-family:'Noto Serif SC','SimSun','STSon
 .lang-btn.active{border-color:rgba(192,160,96,0.9);color:rgba(230,210,150,0.95);box-shadow:0 0 10px rgba(192,160,96,0.2)}
 .settings-close{display:block;margin:16px auto 0;padding:10px 30px;border:1px solid rgba(90,70,50,0.5);border-radius:4px;background:rgba(20,15,10,0.8);color:rgba(192,160,96,0.7);cursor:pointer;font-size:14px;letter-spacing:4px;font-family:inherit;transition:all 0.3s}
 .settings-close:hover{border-color:rgba(192,160,96,0.6)}
+/* ====== 打赏面板 ====== */
+#donate-panel{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:420px;background:rgba(12,8,4,0.98);border:1px solid rgba(160,120,40,0.5);border-radius:12px;padding:30px;z-index:750;display:none;color:rgba(192,160,96,0.9)}
+#donate-panel h3{font-size:18px;letter-spacing:6px;text-align:center;margin-bottom:8px;color:rgba(255,220,120,0.85)}
+#donate-tabs{display:flex;gap:8px;justify-content:center;margin-bottom:16px}
+.donate-tab{padding:8px 18px;border:1px solid rgba(90,70,50,0.5);border-radius:4px;background:rgba(20,15,10,0.8);color:rgba(192,160,96,0.7);cursor:pointer;font-size:13px;letter-spacing:2px;font-family:inherit;transition:all 0.3s}
+.donate-tab:hover{border-color:rgba(192,160,96,0.6)}
+.donate-tab.active{border-color:rgba(200,160,60,0.9);color:rgba(255,220,120,0.95);box-shadow:0 0 10px rgba(200,160,60,0.2)}
+.donate-qr-area{min-height:200px;display:flex;align-items:center;justify-content:center}
+.qr-box{text-align:center}
+.qr-placeholder{width:180px;height:180px;margin:0 auto 12px;border:2px dashed rgba(192,160,96,0.3);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;color:rgba(192,160,96,0.5);letter-spacing:2px;background:rgba(20,15,10,0.5)}
+.qr-box img{width:180px;height:180px;border-radius:8px;border:1px solid rgba(192,160,96,0.3)}
+.qr-hint{font-size:11px;color:rgba(140,120,80,0.5);margin-top:6px;letter-spacing:1px}
 /* ====== Logo画面 ====== */
 #logo-screen{position:absolute;top:0;left:0;width:1280px;height:800px;z-index:900;display:none;align-items:center;justify-content:center;background:#000}
 #logo-img{max-width:60%;max-height:60%;opacity:0;transition:opacity 2s}
@@ -482,6 +494,32 @@ body{background:#000;overflow:hidden;font-family:'Noto Serif SC','SimSun','STSon
     </div>
     <button class="settings-close" id="settings-close" onclick="closeSettings()">确 定</button>
     <button class="settings-close" id="settings-mainmenu" onclick="returnToTitle()" style="margin-top:10px;background:rgba(120,40,40,0.6);border-color:rgba(180,80,80,0.5);color:rgba(220,160,160,0.9)">返回主菜单</button>
+    <button class="settings-close" id="settings-donate" onclick="openDonate()" style="margin-top:10px;background:rgba(160,120,40,0.5);border-color:rgba(200,160,60,0.6);color:rgba(255,220,120,0.95)">☕ 打赏支持</button>
+  </div>
+  <!-- 打赏面板 -->
+  <div id="donate-panel">
+    <h3 id="donate-title">☕ 打赏支持开发者</h3>
+    <p id="donate-desc" style="text-align:center;font-size:13px;color:rgba(192,160,96,0.6);margin-bottom:16px;letter-spacing:1px">如果喜欢这个游戏，可以请开发者喝杯茶 ☕</p>
+    <div id="donate-tabs">
+      <button class="donate-tab active" onclick="switchDonateTab('wechat')" id="tab-wechat">微信支付</button>
+      <button class="donate-tab" onclick="switchDonateTab('alipay')" id="tab-alipay">支付宝</button>
+      <button class="donate-tab" onclick="switchDonateTab('afdian')" id="tab-afdian">爱发电</button>
+    </div>
+    <div id="donate-qr" class="donate-qr-area">
+      <div id="qr-wechat" class="qr-box">
+        <div class="qr-placeholder">微信扫码打赏</div>
+        <p class="qr-hint">请替换为你的微信收款码</p>
+      </div>
+      <div id="qr-alipay" class="qr-box" style="display:none">
+        <div class="qr-placeholder">支付宝扫码打赏</div>
+        <p class="qr-hint">请替换为你的支付宝收款码</p>
+      </div>
+      <div id="qr-afdian" class="qr-box" style="display:none">
+        <a href="https://afdian.com" target="_blank" style="color:rgba(192,160,96,0.9);font-size:15px;letter-spacing:2px;text-decoration:none">前往爱发电支持 →</a>
+        <p class="qr-hint">请替换为你的爱发电主页链接</p>
+      </div>
+    </div>
+    <button class="settings-close" onclick="closeDonate()" style="margin-top:16px">关 闭</button>
   </div>
   <!-- Logo画面 -->
   <div id="logo-screen"><img id="logo-img" src="label.webp" alt="Logo"></div>
@@ -2106,6 +2144,22 @@ function closeSettings(){
   settings.lang=LANG;
   saveSettings();applySettings();
   document.getElementById('settings-panel').style.display='none';
+}
+function openDonate(){
+  document.getElementById('settings-panel').style.display='none';
+  document.getElementById('donate-panel').style.display='block';
+  switchDonateTab('wechat');
+}
+function closeDonate(){
+  document.getElementById('donate-panel').style.display='none';
+  document.getElementById('settings-panel').style.display='block';
+}
+function switchDonateTab(type){
+  document.querySelectorAll('.donate-tab').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+type).classList.add('active');
+  document.getElementById('qr-wechat').style.display=type==='wechat'?'block':'none';
+  document.getElementById('qr-alipay').style.display=type==='alipay'?'block':'none';
+  document.getElementById('qr-afdian').style.display=type==='afdian'?'block':'none';
 }
 function applySettings(){
   if(bgmAudio)bgmAudio.volume=settings.volume/100;
